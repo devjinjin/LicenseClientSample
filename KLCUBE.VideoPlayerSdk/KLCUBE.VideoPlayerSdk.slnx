@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="KLCUBE.Video.Contracts/KLCUBE.Video.Contracts.csproj" Id="a205d83e-3fcb-4eca-bdca-b0a3893bbd75" />
+  <Project Path="KLCUBE.Video.Core.NetFx/KLCUBE.Video.Core.NetFx.csproj" Id="5f353730-1c03-4e11-b4b4-b63ea22a5e60" />
+  <Project Path="KLCUBE.Video.Core.Shared/KLCUBE.Video.Core.Shared.csproj" Id="b4076a5d-c813-4c96-9570-5b3fc6f05686" />
+  <Project Path="KLCUBE.Video.Sample.WinForms.NetFx/KLCUBE.Video.Sample.WinForms.NetFx.csproj" Id="6c09ed36-292f-4c0e-b05b-c3047a2ceca3" />
+</Solution>

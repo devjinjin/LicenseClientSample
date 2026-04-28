@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KLCUBE JSP Iframe Client Sample</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #222;
+      background: #f4f6f8;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      background: #fff;
+      border-bottom: 1px solid #d7dde5;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: min(680px, 100%);
+    }
+
+    input {
+      width: 100%;
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid #b9c0ca;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    button {
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid #2563eb;
+      border-radius: 6px;
+      background: #2563eb;
+      color: #fff;
+      cursor: pointer;
+      font: inherit;
+      white-space: nowrap;
+    }
+
+    .frame-wrap {
+      min-height: 0;
+      padding: 18px;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 94px);
+      min-height: 560px;
+      border: 1px solid #cfd6df;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .controls {
+        min-width: 0;
+      }
+
+      .frame-wrap {
+        padding: 12px;
+      }
+
+      iframe {
+        height: calc(100vh - 142px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="topbar">
+      <h1>KLCUBE JSP Iframe Client</h1>
+
+      <div class="controls">
+        <input id="iframeUrl" aria-label="JSP client URL" />
+        <button id="loadButton" type="button">Load</button>
+      </div>
+    </header>
+
+    <section class="frame-wrap">
+      <iframe
+        id="jspClientFrame"
+        title="KLCUBE JSP License Player"
+        allow="autoplay; fullscreen; encrypted-media"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </section>
+  </main>
+
+  <script>
+    const defaultJspClientUrl = "http://localhost:8080/klcube-license-jsp-client/";
+    const params = new URLSearchParams(window.location.search);
+    const initialUrl = params.get("jspUrl") || defaultJspClientUrl;
+    const iframeUrlEl = document.getElementById("iframeUrl");
+    const iframeEl = document.getElementById("jspClientFrame");
+
+    function loadIframe(url) {
+      const normalizedUrl = String(url || "").trim();
+      if (!normalizedUrl) {
+        return;
+      }
+
+      iframeEl.src = normalizedUrl;
+      iframeUrlEl.value = normalizedUrl;
+    }
+
+    document.getElementById("loadButton").addEventListener("click", () => {
+      loadIframe(iframeUrlEl.value);
+    });
+
+    iframeUrlEl.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        loadIframe(iframeUrlEl.value);
+      }
+    });
+
+    loadIframe(initialUrl);
+  </script>
+</body>
+
+</html>

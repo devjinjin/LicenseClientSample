@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KLCUBE License Player Sample</title>
+
+  <!-- Required for HLS playback on browsers without native HLS support. -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <!-- KLCUBE license player library. Host this file from your own static server or CDN. -->
+  <script src="./klcube-license-player.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px;
+      font-family: Arial, sans-serif;
+      color: #222;
+      background: #f6f7f9;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .video-frame {
+      position: relative;
+      width: 100%;
+      background: #000;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+
+    .center-play-button {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      padding: 0;
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.58);
+      color: #fff;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    .center-play-button::before {
+      content: "";
+      width: 0;
+      height: 0;
+      margin-left: 6px;
+      border-top: 16px solid transparent;
+      border-bottom: 16px solid transparent;
+      border-left: 24px solid currentColor;
+    }
+
+    .center-play-button:hover {
+      background: rgba(37, 99, 235, 0.88);
+    }
+
+    .center-play-button.is-hidden {
+      display: none;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      min-height: 40px;
+      padding: 0 16px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #f0f0f0;
+    }
+
+    #message {
+      min-height: 24px;
+      margin-top: 12px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    #message.error {
+      color: #b00020;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>KLCUBE License Player Sample</h1>
+
+    <section class="panel">
+      <div class="video-frame">
+        <video id="klcubeVideo" controls loop></video>
+        <button id="centerPlayButton" class="center-play-button" type="button" aria-label="Play video"></button>
+      </div>
+
+      <div class="actions">
+        <button id="playButton" type="button">Play Licensed Video</button>
+        <button id="clearButton" type="button">Clear License Session</button>
+      </div>
+
+      <div id="message"></div>
+    </section>
+  </main>
+
+  <script>
+    const messageEl = document.getElementById("message");
+    const videoEl = document.getElementById("klcubeVideo");
+    const playButtonEl = document.getElementById("playButton");
+    const centerPlayButtonEl = document.getElementById("centerPlayButton");
+
+    function showMessage(text, isError = false) {
+      messageEl.textContent = text;
+      messageEl.className = isError ? "error" : "";
+    }
+
+    const player = new KlcubeLicensePlayer({
+      // Change this to your KLCUBE license server origin.
+      serverBaseUrl: "https://localhost:32773",
+
+      // Change this value to the license key issued by KLCUBE.
+      licenseKey: "KLC-LIC-183A910E1CA546EEAD7A114A8ACC59AD",
+
+      // Pass the video element or CSS selector that should play protected video.
+      videoElement: "#klcubeVideo"
+    });
+
+    async function playLicensedVideo() {
+      try {
+        playButtonEl.disabled = true;
+        centerPlayButtonEl.disabled = true;
+        showMessage("Checking license...");
+
+        // Change this to the protected video id registered on the license server.
+        await player.play("video001");
+
+        centerPlayButtonEl.classList.add("is-hidden");
+        showMessage("Playback started.");
+      } catch (error) {
+        showMessage(error.message || "Playback failed.", true);
+        console.error("KLCUBE playback error", error);
+      } finally {
+        playButtonEl.disabled = false;
+        centerPlayButtonEl.disabled = false;
+      }
+    }
+
+    playButtonEl.addEventListener("click", () => {
+      playLicensedVideo();
+    });
+
+    centerPlayButtonEl.addEventListener("click", () => {
+      playLicensedVideo();
+    });
+
+    videoEl.addEventListener("pause", () => {
+      if (!videoEl.ended) {
+        centerPlayButtonEl.classList.remove("is-hidden");
+      }
+    });
+
+    videoEl.addEventListener("play", () => {
+      centerPlayButtonEl.classList.add("is-hidden");
+    });
+
+    videoEl.addEventListener("ended", () => {
+      centerPlayButtonEl.classList.remove("is-hidden");
+    });
+
+    document.getElementById("clearButton").addEventListener("click", () => {
+      player.stop();
+      player.clearSession();
+      centerPlayButtonEl.classList.remove("is-hidden");
+      showMessage("License session cleared.");
+    });
+  </script>
+</body>
+
+</html>

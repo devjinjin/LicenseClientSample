@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KLCUBE License Client Test</title>
+  <script src="./klcube-license-player.js"></script>
+</head>
+
+<body>
+  <h1>라이선스 서버 연동 테스트</h1>
+
+ <main>
+    <h1>KLCUBE License Player Sample</h1>
+
+    <section class="panel">
+      <div class="video-frame">
+        <video id="klcubeVideo" controls></video>
+      </div>
+
+      <div class="actions">
+        <button id="playButton" type="button">Play Licensed Video</button>
+        <button id="clearButton" type="button">Clear License Session</button>
+      </div>
+
+      <div id="message"></div>
+    </section>
+  </main>
+
+  <script>
+    const messageEl = document.getElementById("message");
+
+    function showMessage(text, isError = false) {
+      messageEl.textContent = text;
+      messageEl.className = isError ? "error" : "";
+    }
+
+    const player = new KlcubeLicensePlayer({
+      // Change this to your KLCUBE license server origin.
+      serverBaseUrl: "https://localhost:32773",
+
+      // Change this value to the license key issued by KLCUBE.
+      licenseKey: "KLC-LIC-99548ABAEEBC40A590408A8580AC03EF",
+
+      // Pass the video element or CSS selector that should play protected video.
+      videoElement: "#klcubeVideo"
+    });
+
+    document.getElementById("playButton").addEventListener("click", async () => {
+      try {
+        showMessage("Checking license...");
+
+        // Change this to the protected video id registered on the license server.
+        await player.play("video001");
+
+        showMessage("Playback started.");
+      } catch (error) {
+        showMessage(error.message || "Playback failed.", true);
+        console.error("KLCUBE playback error", error);
+      }
+    });
+
+    document.getElementById("clearButton").addEventListener("click", () => {
+      player.stop();
+      player.clearSession();
+      showMessage("License session cleared.");
+    });
+  </script>
+
+</body>
+
+</html>

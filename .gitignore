@@ -1,0 +1,52 @@
+# [Dependency Folders]
+node_modules/            # JavaScript/TypeScript, React
+packages/                # C# NuGet packages
+bin/                     # C# WPF Build outputs
+obj/                     # C# WPF Intermediate outputs
+vendor/                  # PHP Composer dependencies
+
+# [Build Outputs & Temporary Files]
+dist/                    # React, TypeScript build outputs
+build/                   # React build outputs
+out/                     # General build outputs
+*.exe                    # C# Executables
+*.dll                    # Dynamic Link Libraries
+*.pdb                    # Program Database files (C#)
+*.suo                    # Visual Studio User options
+*.user                   # Visual Studio User project settings
+.vs/                     # Visual Studio IDE settings
+
+# [Web & Scripting]
+.env                     # Environment variables (React, PHP)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache             # React/Typescript cache
+
+# [Java/JSP Specific]
+*.class                  # Compiled Java files
+.metadata/               # Eclipse metadata
+.settings/               # Eclipse settings
+.project
+.classpath
+*.war                    # Web Application Archive
+*.ear                    # Enterprise Application Archive
+
+# [PHP Specific]
+composer.phar
+.phpstep
+.phpunit.result.cache
+
+# [OS Generated Files]
+.DS_Store                # macOS
+Thumbs.db                # Windows
+desktop.ini
+
+# [IDE Specific]
+.idea/                   # IntelliJ, WebStorm, PhpStorm
+.vscode/                 # Visual Studio Code (팀 협업 시 공유가 필요하면 제외 가능)
+*.swp                    # Vim temporary files

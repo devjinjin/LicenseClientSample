@@ -1,0 +1,16 @@
+
+> klcube-license-react-client@1.0.0 dev
+> vite --host 0.0.0.0 --port 5173 --host 0.0.0.0 --port 5173
+
+
+  [32m[1mVITE[22m v7.3.2[39m  [2mready in [0m[1m307[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.10.11.144:[1m5173[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://172.21.16.1:[1m5173[22m/[39m
+[2mPM 1:34:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+[2mPM 1:57:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+[2mPM 1:57:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+[2mPM 1:57:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+[2mPM 1:59:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+[2mPM 2:04:15[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
