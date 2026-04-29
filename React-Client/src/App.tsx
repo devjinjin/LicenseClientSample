@@ -35,9 +35,9 @@ declare global {
   }
 }
 
-const defaultServerBaseUrl = import.meta.env.VITE_LICENSE_SERVER_URL || "https://localhost:32783";
+const defaultServerBaseUrl = import.meta.env.VITE_LICENSE_SERVER_URL || "https://localhost:32775";
 const defaultLicenseKey =
-  import.meta.env.VITE_LICENSE_KEY || "KLC-LIC-5B928B1059C24B629AD4B1CC95B1855F";
+  import.meta.env.VITE_LICENSE_KEY || "KLC-LIC-C65F766F751245FF96BD8134AAB39BD5";
 const defaultVideoId = import.meta.env.VITE_VIDEO_ID || "video001";
 
 export default function App() {

@@ -151,12 +151,19 @@
     }
 
     const player = new KlcubeLicensePlayer({
-      serverBaseUrl: "https://localhost:32783",
-      licenseKey: "KLC-LIC-5B928B1059C24B629AD4B1CC95B1855F",
+      serverBaseUrl: "https://localhost:32775",
+      licenseKey: "KLC-LIC-C65F766F751245FF96BD8134AAB39BD5",
       videoElement: "#videoPlayer",
       logger: (eventName, data) => log(`[${eventName}]`, data)
     });
 
+    //     const player = new KlcubeLicensePlayer({
+    //   serverBaseUrl: "http://3.39.230.9:8080/",
+    //   licenseKey: "KLC-LIC-9AB8F11004FB40B3AB2B9209FF3CA60C",
+    //   videoElement: "#videoPlayer",
+    //   logger: (eventName, data) => log(`[${eventName}]`, data)
+    // });
+    
     document.getElementById("btnActivate").addEventListener("click", async () => {
       try {
         const result = await player.activate();
@@ -177,7 +184,7 @@
 
     document.getElementById("btnPlay").addEventListener("click", async () => {
       try {
-        const result = await player.play("video001");
+        const result = await player.play("1");
         log("[RESULT] PLAY", result);
       } catch (error) {
         log("[ERROR] PLAY", { message: error.message, resultCode: error.resultCode });

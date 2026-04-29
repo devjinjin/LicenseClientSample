@@ -2,7 +2,7 @@
   "use strict";
 
   const DEFAULT_STORAGE_PREFIX = "klcube_license_player";
-  const DEVICE_FINGERPRINT_VERSION = "browser-aware-v1";
+  const DEVICE_FINGERPRINT_VERSION = "browser-stable-v2";
   const RESULT_CODES_REQUIRING_ACTIVATION = new Set([
     "TOKEN_MISSING",
     "TOKEN_EXPIRED",
@@ -47,10 +47,12 @@
 
     async activate() {
       const deviceFingerprint = await this.getDeviceFingerprint();
+      const deviceSecret = this.getDeviceSecret();
       const result = await this.postJson("/api/licenses/activate", {
         licenseKey: this.licenseKey,
         hostName: global.location && global.location.hostname ? global.location.hostname : "web-client",
         deviceFingerprint,
+        deviceSecret,
         machineGuid: null,
         macAddress: null,
         internalIpAddress: null
@@ -63,6 +65,7 @@
         this.setSession("tokenId", result.data.tokenId || "");
         this.setSession("deviceFingerprint", deviceFingerprint);
         this.setSession("tokenExpiresAt", result.data.expiresAt || "");
+        this.setDeviceSecret(result.data.deviceSecret || "");
       }
 
       return result;
@@ -71,14 +74,16 @@
     async validate() {
       const token = this.getSession("token");
       const deviceFingerprint = this.getSession("deviceFingerprint") || await this.getDeviceFingerprint();
+      const deviceSecret = this.getDeviceSecret();
 
-      if (!token || !deviceFingerprint) {
+      if (!token || !deviceFingerprint || !deviceSecret) {
         return createFailure("TOKEN_MISSING", "Stored activation token is missing.");
       }
 
       const result = await this.postJson("/api/licenses/validate", {
         token,
-        deviceFingerprint
+        deviceFingerprint,
+        deviceSecret
       });
 
       this.log("validate", result);
@@ -92,14 +97,16 @@
 
       const token = this.getSession("token");
       const deviceFingerprint = this.getSession("deviceFingerprint") || await this.getDeviceFingerprint();
+      const deviceSecret = this.getDeviceSecret();
 
-      if (!token || !deviceFingerprint) {
+      if (!token || !deviceFingerprint || !deviceSecret) {
         return createFailure("TOKEN_MISSING", "Stored activation token is missing.");
       }
 
       const result = await this.postJson("/api/videos/playback-token", {
         token,
         deviceFingerprint,
+        deviceSecret,
         videoId
       });
 
@@ -151,7 +158,7 @@
         throw new KlcubeLicenseError("Playable stream URL was not returned.", playbackResult);
       }
 
-      await this.loadSource(videoElement, source);
+      await this.loadSource(videoElement, source, playbackResult.data);
 
       if (playOptions.autoplay !== false) {
         await videoElement.play();
@@ -193,10 +200,8 @@
         return cached;
       }
 
-      const browserId = getOrCreateBrowserId(this.storagePrefix);
       const raw = [
         DEVICE_FINGERPRINT_VERSION,
-        browserId,
         this.browserFamily,
         navigator.userAgent || "",
         navigator.platform || "",
@@ -231,7 +236,7 @@
       return null;
     }
 
-    async loadSource(videoElement, source) {
+    async loadSource(videoElement, source, playbackData) {
       this.disposeHls();
 
       if (source.type === "hls") {
@@ -244,8 +249,15 @@
         const HlsCtor = this.hlsFactory || global.Hls;
         if (HlsCtor && typeof HlsCtor.isSupported === "function" && HlsCtor.isSupported()) {
           this.hlsInstance = new HlsCtor();
+          this.attachHlsFallback(videoElement, playbackData);
           this.hlsInstance.loadSource(source.url);
           this.hlsInstance.attachMedia(videoElement);
+          return;
+        }
+
+        if (playbackData && playbackData.streamUrl) {
+          videoElement.src = toAbsoluteUrl(this.serverBaseUrl, playbackData.streamUrl);
+          videoElement.load();
           return;
         }
 
@@ -254,6 +266,31 @@
 
       videoElement.src = source.url;
       videoElement.load();
+    }
+
+    attachHlsFallback(videoElement, playbackData) {
+      if (!this.hlsInstance || !playbackData || !playbackData.streamUrl) {
+        return;
+      }
+
+      const HlsCtor = this.hlsFactory || global.Hls;
+      if (!HlsCtor || !HlsCtor.Events || !HlsCtor.Events.ERROR) {
+        return;
+      }
+
+      this.hlsInstance.on(HlsCtor.Events.ERROR, (_eventName, data) => {
+        if (!data || data.fatal !== true) {
+          return;
+        }
+
+        const fallbackUrl = toAbsoluteUrl(this.serverBaseUrl, playbackData.streamUrl);
+        this.disposeHls();
+        videoElement.src = fallbackUrl;
+        videoElement.load();
+        videoElement.play().catch(() => {
+          // Autoplay may be blocked by the browser after a fallback source switch.
+        });
+      });
     }
 
     disposeHls() {
@@ -293,6 +330,20 @@
     setSession(name, value) {
       setStorage(sessionStorage, this.sessionKey(name), value);
     }
+
+    localKey(name) {
+      return `${this.storagePrefix}_${name}`;
+    }
+
+    getDeviceSecret() {
+      return getStorage(localStorage, this.localKey("deviceSecret"));
+    }
+
+    setDeviceSecret(value) {
+      if (value) {
+        setStorage(localStorage, this.localKey("deviceSecret"), value);
+      }
+    }
   }
 
   function normalizeBaseUrl(value) {
@@ -327,18 +378,6 @@
       message,
       data: null
     };
-  }
-
-  function getOrCreateBrowserId(prefix) {
-    const key = `${prefix}_browserId`;
-    let value = getStorage(localStorage, key);
-
-    if (!value) {
-      value = createUuid();
-      setStorage(localStorage, key, value);
-    }
-
-    return value;
   }
 
   function detectBrowserFamily() {

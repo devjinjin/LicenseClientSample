@@ -2,7 +2,7 @@
   "use strict";
 
   const DEFAULT_STORAGE_PREFIX = "klcube_license_player";
-  const DEVICE_FINGERPRINT_VERSION = "browser-aware-v1";
+  const DEVICE_FINGERPRINT_VERSION = "browser-stable-v2";
   const RESULT_CODES_REQUIRING_ACTIVATION = new Set([
     "TOKEN_MISSING",
     "TOKEN_EXPIRED",
@@ -193,10 +193,8 @@
         return cached;
       }
 
-      const browserId = getOrCreateBrowserId(this.storagePrefix);
       const raw = [
         DEVICE_FINGERPRINT_VERSION,
-        browserId,
         this.browserFamily,
         navigator.userAgent || "",
         navigator.platform || "",
@@ -327,18 +325,6 @@
       message,
       data: null
     };
-  }
-
-  function getOrCreateBrowserId(prefix) {
-    const key = `${prefix}_browserId`;
-    let value = getStorage(localStorage, key);
-
-    if (!value) {
-      value = createUuid();
-      setStorage(localStorage, key, value);
-    }
-
-    return value;
   }
 
   function detectBrowserFamily() {
