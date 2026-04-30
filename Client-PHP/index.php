@@ -1,7 +1,7 @@
 <?php
 $defaultServerBaseUrl = getenv('KLCUBE_LICENSE_SERVER_URL') ?: 'https://localhost:32773';
 $defaultLicenseKey = getenv('KLCUBE_LICENSE_KEY') ?: 'KLC-LIC-183A910E1CA546EEAD7A114A8ACC59AD';
-$defaultVideoId = getenv('KLCUBE_VIDEO_ID') ?: 'video001';
+$defaultVideoId = getenv('KLCUBE_VIDEO_ID') ?: '1'; //'video001';
 ?>
 <!DOCTYPE html>
 <html lang="ko">
